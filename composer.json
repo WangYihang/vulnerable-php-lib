@@ -1,0 +1,16 @@
+{
+    "name": "wangyihang/vulnerable-php-lib",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "Wangyihang\\VulnerablePhpLib\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Yihang Wang",
+            "email": "wangyihanger@gmail.com"
+        }
+    ],
+    "require": {}
+}
