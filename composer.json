@@ -25,9 +25,5 @@
         "psr-4": {
             "VulnerablePhpLib\\": "src/"
         }
-    },
-    "minimum-stability": "stable",
-    "require-dev": {
-        "phpunit/phpunit": "^7.0"
     }
 }
