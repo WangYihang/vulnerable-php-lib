@@ -28,6 +28,46 @@ class CommandInjection
     }
 
     /**
+     * Execute ping command with basic regex filtering
+     * Vulnerability: Incomplete regex filtering, can still inject commands
+     * @param string $host Host to ping
+     * @return string Ping result
+     */
+    public static function pingHostWithBasicFilter($host)
+    {
+        // Only filter some basic characters, but filtering is incomplete
+        $host = preg_replace('/[;&|`$]/', '', $host);
+        return shell_exec("ping -c 4 " . $host);
+    }
+
+    /**
+     * Execute ping command with domain validation
+     * Vulnerability: Domain validation can be bypassed with command injection
+     * @param string $host Host to ping
+     * @return string Ping result
+     */
+    public static function pingHostWithDomainCheck($host)
+    {
+        if (!preg_match('/^[a-zA-Z0-9\.-]+$/', $host)) {
+            throw new \Exception('Invalid host format');
+        }
+        return shell_exec("ping -c 4 " . $host);
+    }
+
+    /**
+     * Execute ping command with incomplete escaping
+     * Vulnerability: Incomplete escaping, can still inject commands
+     * @param string $host Host to ping
+     * @return string Ping result
+     */
+    public static function pingHostWithIncompleteEscaping($host)
+    {
+        $host = escapeshellarg($host);
+        // Vulnerable because the command is still concatenated
+        return shell_exec("ping -c 4 " . $host . " 2>/dev/null");
+    }
+
+    /**
      * Execute file find command with partial special character filtering
      * Vulnerability: Incomplete filtering, can still inject commands
      * @param string $filename Filename to search for
