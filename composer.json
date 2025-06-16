@@ -3,19 +3,31 @@
     "description": "A collection of vulnerable PHP functions for security testing and education purposes",
     "type": "library",
     "license": "MIT",
-    "autoload": {
-        "psr-4": {
-            "VulnerablePhpLib\\": "src/"
-        }
-    },
+    "keywords": [
+        "security",
+        "vulnerability",
+        "testing",
+        "education"
+    ],
+    "homepage": "https://github.com/wangyihang/vulnerable-php-lib",
     "authors": [
         {
             "name": "Yihang Wang",
-            "email": "wangyihanger@gmail.com"
+            "email": "wangyihanger@gmail.com",
+            "homepage": "https://github.com/wangyihang",
+            "role": "Developer"
         }
     ],
     "require": {
         "php": ">=7.0"
     },
-    "minimum-stability": "stable"
+    "autoload": {
+        "psr-4": {
+            "VulnerablePhpLib\\": "src/"
+        }
+    },
+    "minimum-stability": "stable",
+    "require-dev": {
+        "phpunit/phpunit": "^7.0"
+    }
 }
