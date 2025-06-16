@@ -1,9 +1,11 @@
 {
     "name": "wangyihang/vulnerable-php-lib",
+    "description": "A collection of vulnerable PHP functions for security testing and education purposes",
     "type": "library",
+    "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Wangyihang\\VulnerablePhpLib\\": "src/"
+            "VulnerablePhpLib\\": "src/"
         }
     },
     "authors": [
@@ -12,5 +14,8 @@
             "email": "wangyihanger@gmail.com"
         }
     ],
-    "require": {}
+    "require": {
+        "php": ">=7.0"
+    },
+    "minimum-stability": "stable"
 }
