@@ -42,23 +42,44 @@ $result = CommandInjection::executeFilteredCommand($_GET['command']);
 ```php
 use VulnerablePhpLib\SSRF;
 
-// Fetch URL content directly (no filtering)
+// Basic SSRF (no filtering)
 $result = SSRF::fetchUrl($_GET['url']);
 
-// Fetch URL content (only protocol filtering)
+// SSRF with protocol filtering
 $result = SSRF::fetchUrlWithProtocol($_GET['url']);
 
-// Fetch URL content (only localhost filtering)
-$result = SSRF::fetchUrlWithLocalhostFilter($_GET['url']);
-
-// Fetch URL content (incomplete IP filtering)
+// SSRF with IP filtering
 $result = SSRF::fetchUrlWithIPFilter($_GET['url']);
 
-// Fetch URL content (incomplete domain filtering)
-$result = SSRF::fetchUrlWithDomainFilter($_GET['url']);
-
-// Fetch URL content (incomplete redirect filtering)
+// SSRF with redirect handling
 $result = SSRF::fetchUrlWithRedirect($_GET['url']);
+
+// SSRF with domain filtering
+$result = SSRF::fetchUrlWithDomain($_GET['url']);
+
+// SSRF with response size limit
+$result = SSRF::fetchUrlWithSizeLimit($_GET['url']);
+```
+
+### File Read Vulnerabilities
+
+```php
+use VulnerablePhpLib\FileRead;
+
+// Basic path traversal
+$result = FileRead::readFileBasic($_GET['path']);
+
+// Path traversal with basic validation
+$result = FileRead::readFileMedium($_GET['path']);
+
+// Path traversal with advanced validation
+$result = FileRead::readFileAdvanced($_GET['path']);
+
+// File read with extension filtering
+$result = FileRead::readFileWithExtension($_GET['path']);
+
+// File read with directory restriction
+$result = FileRead::readFileWithDirectory($_GET['path'], '/var/www/html');
 ```
 
 ## Security Warning

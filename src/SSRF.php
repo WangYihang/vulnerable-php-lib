@@ -1,12 +1,12 @@
 <?php
 
-namespace Wangyihang\VulnerablePhpLib;
+namespace VulnerablePhpLib;
 
 class SSRF
 {
     /**
-     * Fetch URL content using file_get_contents without any filtering
-     * Vulnerability: Can access any URL, including internal network addresses
+     * Basic SSRF Vulnerability
+     * Vulnerability: Direct use of user input URL without any validation
      * @param string $url URL to fetch
      * @return string URL content
      */
@@ -16,8 +16,8 @@ class SSRF
     }
 
     /**
-     * Fetch URL content using curl with only http/https protocol filtering
-     * Vulnerability: Can use other protocols like file://, dict://, gopher:// etc.
+     * SSRF with Protocol Filtering
+     * Vulnerability: Only checks if URL starts with http:// or https://
      * @param string $url URL to fetch
      * @return string URL content
      */
@@ -36,30 +36,29 @@ class SSRF
     }
 
     /**
-     * Fetch URL content using file_get_contents with only localhost filtering
-     * Vulnerability: Can use IP addresses or other hostnames to access internal network
-     * @param string $url URL to fetch
-     * @return string URL content
-     */
-    public static function fetchUrlWithLocalhostFilter($url)
-    {
-        if (strpos($url, 'localhost') !== false) {
-            return "Access to localhost is not allowed";
-        }
-        return file_get_contents($url);
-    }
-
-    /**
-     * Fetch URL content using curl with incomplete IP filtering
-     * Vulnerability: IP filtering is incomplete, can use other IP address formats
+     * SSRF with IP Filtering
+     * Vulnerability: Incomplete IP filtering that can be bypassed
      * @param string $url URL to fetch
      * @return string URL content
      */
     public static function fetchUrlWithIPFilter($url)
     {
-        // Incomplete IP filtering
-        if (preg_match('/\b(?:127\.0\.0\.1|localhost)\b/', $url)) {
-            return "Access to localhost is not allowed";
+        $parsedUrl = parse_url($url);
+        $host = $parsedUrl['host'] ?? '';
+        
+        if (filter_var($host, FILTER_VALIDATE_IP)) {
+            $ip = ip2long($host);
+            if ($ip !== false) {
+                // Check if it's an internal IP
+                if (
+                    ($ip >= ip2long('10.0.0.0') && $ip <= ip2long('10.255.255.255')) ||
+                    ($ip >= ip2long('172.16.0.0') && $ip <= ip2long('172.31.255.255')) ||
+                    ($ip >= ip2long('192.168.0.0') && $ip <= ip2long('192.168.255.255')) ||
+                    $ip == ip2long('127.0.0.1')
+                ) {
+                    return "Internal IP addresses are not allowed";
+                }
+            }
         }
         
         $ch = curl_init();
@@ -72,27 +71,8 @@ class SSRF
     }
 
     /**
-     * Fetch URL content using file_get_contents with incomplete domain filtering
-     * Vulnerability: Domain filtering is incomplete, can use other methods to access internal network
-     * @param string $url URL to fetch
-     * @return string URL content
-     */
-    public static function fetchUrlWithDomainFilter($url)
-    {
-        $parsed = parse_url($url);
-        if (isset($parsed['host'])) {
-            // Incomplete domain filtering
-            if (strpos($parsed['host'], 'internal') !== false || 
-                strpos($parsed['host'], 'local') !== false) {
-                return "Access to internal domains is not allowed";
-            }
-        }
-        return file_get_contents($url);
-    }
-
-    /**
-     * Fetch URL content using curl with incomplete redirect filtering
-     * Vulnerability: Redirect filtering is incomplete, can access internal network through redirects
+     * SSRF with Redirect Handling
+     * Vulnerability: Incomplete redirect handling that can be exploited
      * @param string $url URL to fetch
      * @return string URL content
      */
@@ -106,6 +86,56 @@ class SSRF
         // No redirect target checking
         $result = curl_exec($ch);
         curl_close($ch);
+        return $result;
+    }
+
+    /**
+     * SSRF with Domain Filtering
+     * Vulnerability: Incomplete domain filtering that can be bypassed
+     * @param string $url URL to fetch
+     * @return string URL content
+     */
+    public static function fetchUrlWithDomain($url)
+    {
+        $parsedUrl = parse_url($url);
+        $host = $parsedUrl['host'] ?? '';
+        
+        // Incomplete domain filtering
+        if (strpos($host, 'internal') !== false || 
+            strpos($host, 'local') !== false) {
+            return "Internal domains are not allowed";
+        }
+        
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        $result = curl_exec($ch);
+        curl_close($ch);
+        return $result;
+    }
+
+    /**
+     * SSRF with Response Size Limit
+     * Vulnerability: Incomplete response size handling
+     * @param string $url URL to fetch
+     * @param int $maxSize Maximum response size in bytes
+     * @return string URL content
+     */
+    public static function fetchUrlWithSizeLimit($url, $maxSize = 1048576)
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        $result = curl_exec($ch);
+        curl_close($ch);
+        
+        // Incomplete size limit implementation
+        if (strlen($result) > $maxSize) {
+            return "Response too large";
+        }
+        
         return $result;
     }
 } 
