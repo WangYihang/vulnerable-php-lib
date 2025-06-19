@@ -26,7 +26,7 @@ class RemoteCodeExecution
     public static function level2($host)
     {
         $host = str_replace(' ', '', $host);
-        return shell_exec("ping -c 4 " . $host);
+        return shell_exec("ping -c 1 " . $host);
     }
 
     /**
@@ -40,7 +40,7 @@ class RemoteCodeExecution
     {
         // Only filter some basic characters, but filtering is incomplete
         $host = preg_replace('/[;&|`$]/', '', $host);
-        return shell_exec("ping -c 4 " . $host);
+        return shell_exec("ping -c 1 " . $host);
     }
 
     /**
@@ -56,7 +56,7 @@ class RemoteCodeExecution
         if (!preg_match('/^[a-zA-Z0-9\.-]+$/', $host)) {
             throw new \Exception('Invalid host format');
         }
-        return shell_exec("ping -c 4 " . $host);
+        return shell_exec("ping -c 1 " . $host);
     }
 
     /**
@@ -70,6 +70,6 @@ class RemoteCodeExecution
     {
         $host = escapeshellarg($host);
         // Vulnerable because the command is still concatenated
-        return shell_exec("ping -c 4 " . $host . " 2>/dev/null");
+        return shell_exec("ping -c 1 " . $host . " 2>/dev/null");
     }
 } 
