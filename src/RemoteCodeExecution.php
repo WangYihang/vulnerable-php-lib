@@ -5,6 +5,35 @@ namespace Wangyihang\VulnerablePhpLib;
 class RemoteCodeExecution
 {
     /**
+     * Execute a system command and capture stdout and stderr.
+     * Throws exception on non-zero exit code with stderr message.
+     *
+     * @param string $command
+     * @return string
+     * @throws \RuntimeException
+     */
+    private static function executeCommand($command)
+    {
+        $descriptorspec = [
+            1 => ['pipe', 'w'], // stdout
+            2 => ['pipe', 'w'], // stderr
+        ];
+        $process = proc_open($command, $descriptorspec, $pipes);
+        if (!is_resource($process)) {
+            throw new \RuntimeException('Could not start process');
+        }
+        $stdout = stream_get_contents($pipes[1]);
+        fclose($pipes[1]);
+        $stderr = stream_get_contents($pipes[2]);
+        fclose($pipes[2]);
+        $return_value = proc_close($process);
+        if ($return_value !== 0) {
+            throw new \RuntimeException("Command($command) execution failed (exit code $return_value): $stderr");
+        }
+        return $stdout;
+    }
+
+    /**
      * Executes a system command directly without any filtering.
      *
      * @param string $command The command to execute (user input is executed directly).
@@ -13,7 +42,7 @@ class RemoteCodeExecution
      */
     public static function level1($command)
     {
-        return shell_exec($command);
+        return self::executeCommand($command);
     }
 
     /**
@@ -26,7 +55,7 @@ class RemoteCodeExecution
     public static function level2($host)
     {
         $host = str_replace(' ', '', $host);
-        return shell_exec("ping -c 1 " . $host);
+        return self::executeCommand("ping -c 1 " . $host);
     }
 
     /**
@@ -38,9 +67,8 @@ class RemoteCodeExecution
      */
     public static function level3($host)
     {
-        // Only filter some basic characters, but filtering is incomplete
         $host = preg_replace('/[;&|`$]/', '', $host);
-        return shell_exec("ping -c 1 " . $host);
+        return self::executeCommand("ping -c 1 " . $host);
     }
 
     /**
@@ -56,7 +84,7 @@ class RemoteCodeExecution
         if (!preg_match('/^[a-zA-Z0-9\.-]+$/', $host)) {
             throw new \Exception('Invalid host format');
         }
-        return shell_exec("ping -c 1 " . $host);
+        return self::executeCommand("ping -c 1 " . $host);
     }
 
     /**
@@ -69,7 +97,6 @@ class RemoteCodeExecution
     public static function level5($host)
     {
         $host = escapeshellarg($host);
-        // Vulnerable because the command is still concatenated
-        return shell_exec("ping -c 1 " . $host . " 2>/dev/null");
+        return self::executeCommand("ping -c 1 " . $host . " 2>/dev/null");
     }
 } 
