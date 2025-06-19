@@ -2,7 +2,7 @@
 
 namespace Wangyihang\VulnerablePhpLib;
 
-class SSRF
+class ServerSideRequestFogery
 {
     /**
      * Basic SSRF Vulnerability
@@ -10,7 +10,7 @@ class SSRF
      * @param string $url URL to fetch
      * @return string URL content
      */
-    public static function fetchUrl($url)
+    public static function level1($url)
     {
         return file_get_contents($url);
     }
@@ -21,7 +21,7 @@ class SSRF
      * @param string $url URL to fetch
      * @return string URL content
      */
-    public static function fetchUrlWithProtocol($url)
+    public static function level2($url)
     {
         if (strpos($url, 'http://') === 0 || strpos($url, 'https://') === 0) {
             $ch = curl_init();
@@ -41,7 +41,7 @@ class SSRF
      * @param string $url URL to fetch
      * @return string URL content
      */
-    public static function fetchUrlWithIPFilter($url)
+    public static function level3($url)
     {
         $parsedUrl = parse_url($url);
         $host = $parsedUrl['host'] ?? '';
@@ -76,7 +76,7 @@ class SSRF
      * @param string $url URL to fetch
      * @return string URL content
      */
-    public static function fetchUrlWithRedirect($url)
+    public static function level4($url)
     {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -95,7 +95,7 @@ class SSRF
      * @param string $url URL to fetch
      * @return string URL content
      */
-    public static function fetchUrlWithDomain($url)
+    public static function level5($url)
     {
         $parsedUrl = parse_url($url);
         $host = $parsedUrl['host'] ?? '';
@@ -122,7 +122,7 @@ class SSRF
      * @param int $maxSize Maximum response size in bytes
      * @return string URL content
      */
-    public static function fetchUrlWithSizeLimit($url, $maxSize = 1048576)
+    public static function level6($url, $maxSize = 1048576)
     {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);

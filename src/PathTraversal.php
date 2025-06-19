@@ -2,7 +2,7 @@
 
 namespace Wangyihang\VulnerablePhpLib;
 
-class FileRead
+class PathTraversal
 {
     /**
      * Basic Path Traversal Vulnerability
@@ -10,7 +10,7 @@ class FileRead
      * @param string $path File path to read
      * @return string File contents
      */
-    public static function readFileBasic($path)
+    public static function level1($path)
     {
         return file_get_contents($path);
     }
@@ -21,7 +21,7 @@ class FileRead
      * @param string $path File path to read
      * @return string File contents
      */
-    public static function readFileMedium($path)
+    public static function level2($path)
     {
         // Simple validation that can be bypassed
         if (strpos($path, '..') !== false) {
@@ -36,7 +36,7 @@ class FileRead
      * @param string $path File path to read
      * @return string File contents
      */
-    public static function readFileAdvanced($path)
+    public static function level3($path)
     {
         // More complex validation that can still be bypassed
         $path = urldecode($path);
@@ -52,7 +52,7 @@ class FileRead
      * @param string $path File path to read
      * @return string File contents
      */
-    public static function readFileWithExtension($path)
+    public static function level4($path)
     {
         $extension = pathinfo($path, PATHINFO_EXTENSION);
         $allowedExtensions = ['txt', 'log', 'json'];
@@ -71,7 +71,7 @@ class FileRead
      * @param string $baseDir Base directory to restrict access
      * @return string File contents
      */
-    public static function readFileWithDirectory($path, $baseDir)
+    public static function level5($path, $baseDir)
     {
         $fullPath = $baseDir . '/' . $path;
         
