@@ -5,10 +5,11 @@ namespace Wangyihang\VulnerablePhpLib;
 class CommandInjection
 {
     /**
-     * Execute system command directly without any filtering
-     * Vulnerability: Direct execution of user input
-     * @param string $command Command to execute
-     * @return string Command execution result
+     * Executes a system command directly without any filtering.
+     *
+     * @param string $command The command to execute (user input is executed directly).
+     * @return string|false The result of the command execution, or false on failure.
+     * @vulnerability Direct command execution of user input (command injection).
      */
     public static function level1($command)
     {
@@ -16,10 +17,11 @@ class CommandInjection
     }
 
     /**
-     * Execute ping command with only space filtering
-     * Vulnerability: Can inject commands using other characters (e.g., ; | &)
-     * @param string $host Host to ping
-     * @return string Ping result
+     * Executes a ping command after removing spaces from the host.
+     *
+     * @param string $host The host to ping (spaces are removed, but other injection vectors remain).
+     * @return string|false The result of the ping command, or false on failure.
+     * @vulnerability Space is filtered, but other special characters (e.g., ; | &) can still be used for command injection.
      */
     public static function level2($host)
     {
@@ -28,10 +30,11 @@ class CommandInjection
     }
 
     /**
-     * Execute ping command with basic regex filtering
-     * Vulnerability: Incomplete regex filtering, can still inject commands
-     * @param string $host Host to ping
-     * @return string Ping result
+     * Executes a ping command after basic regex filtering of some special characters.
+     *
+     * @param string $host The host to ping (filters ; & | ` $ but not all dangerous characters).
+     * @return string|false The result of the ping command, or false on failure.
+     * @vulnerability Incomplete regex filtering; command injection is still possible with unfiltered characters.
      */
     public static function level3($host)
     {
@@ -41,10 +44,12 @@ class CommandInjection
     }
 
     /**
-     * Execute ping command with domain validation
-     * Vulnerability: Domain validation can be bypassed with command injection
-     * @param string $host Host to ping
-     * @return string Ping result
+     * Executes a ping command after validating the host with a domain regex.
+     *
+     * @param string $host The host to ping (must match /^[a-zA-Z0-9\.-]+$/).
+     * @return string|false The result of the ping command, or false on failure.
+     * @throws \Exception If the host format is invalid.
+     * @vulnerability Regex validation can be bypassed if not strict enough; command injection may still be possible.
      */
     public static function level4($host)
     {
@@ -55,10 +60,11 @@ class CommandInjection
     }
 
     /**
-     * Execute ping command with incomplete escaping
-     * Vulnerability: Incomplete escaping, can still inject commands
-     * @param string $host Host to ping
-     * @return string Ping result
+     * Executes a ping command after escaping the host argument.
+     *
+     * @param string $host The host to ping (escapeshellarg is used, but command is still concatenated).
+     * @return string|false The result of the ping command, or false on failure.
+     * @vulnerability Incomplete escaping; command injection may still be possible depending on context.
      */
     public static function level5($host)
     {
