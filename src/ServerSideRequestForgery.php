@@ -2,7 +2,7 @@
 
 namespace Wangyihang\VulnerablePhpLib;
 
-class ServerSideRequestFogery
+class ServerSideRequestForgery
 {
     /**
      * Basic SSRF Vulnerability
