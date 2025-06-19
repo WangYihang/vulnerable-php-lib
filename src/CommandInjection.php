@@ -2,7 +2,7 @@
 
 namespace Wangyihang\VulnerablePhpLib;
 
-class CommandInjection
+class RemoteCodeExecution
 {
     /**
      * Executes a system command directly without any filtering.
